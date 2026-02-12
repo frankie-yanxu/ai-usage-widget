@@ -110,144 +110,75 @@ def get_claude_quota():
         return None
 
 
-# ─── 2. Antigravity / Windsurf Local Language Server ─────────────────
+# ─── 2. Antigravity / Windsurf — via antigravity-usage CLI ───────────
 
 def get_antigravity_quota():
-    """Fetch per-model quota from the local Antigravity/Windsurf language server."""
+    """Fetch per-model quota using the antigravity-usage CLI tool.
+
+    Install: npm install -g antigravity-usage
+    The CLI handles language server discovery, CSRF tokens, and SSL internally.
+    """
     try:
+        # Find the CLI binary (may be in npm global bin)
+        cli_paths = [
+            os.path.expanduser("~/.npm-global/bin/antigravity-usage"),
+            "/usr/local/bin/antigravity-usage",
+            "/opt/homebrew/bin/antigravity-usage",
+        ]
+        cli = None
+        for p in cli_paths:
+            if os.path.isfile(p):
+                cli = p
+                break
+        if not cli:
+            # Try PATH
+            which = subprocess.run(["which", "antigravity-usage"],
+                                   capture_output=True, text=True, timeout=3)
+            if which.returncode == 0:
+                cli = which.stdout.strip()
+
+        if not cli:
+            log("Antigravity: antigravity-usage CLI not found (npm i -g antigravity-usage)")
+            return None
+
         result = subprocess.run(
-            ["ps", "-ax", "-o", "pid=,command="],
-            capture_output=True, text=True, timeout=5
+            [cli, "quota", "--json"],
+            capture_output=True, text=True, timeout=30
         )
 
-        processes = []
-        for line in result.stdout.splitlines():
-            if "language_server_macos" in line and "antigravity" in line.lower():
-                csrf_match = re.search(r'--csrf_token\s+(\S+)', line)
-                port_match = re.search(r'--extension_server_port\s+(\d+)', line)
-                pid_match = re.match(r'\s*(\d+)', line)
-                if csrf_match and pid_match:
-                    processes.append({
-                        "pid": pid_match.group(1),
-                        "csrf": csrf_match.group(1),
-                        "ext_port": int(port_match.group(1)) if port_match else None,
-                    })
-
-        if not processes:
-            # Also try Windsurf (same engine)
-            for line in result.stdout.splitlines():
-                if "language_server" in line and ("windsurf" in line.lower() or "codeium" in line.lower()):
-                    csrf_match = re.search(r'--csrf_token\s+(\S+)', line)
-                    port_match = re.search(r'--extension_server_port\s+(\d+)', line)
-                    pid_match = re.match(r'\s*(\d+)', line)
-                    if csrf_match and pid_match:
-                        processes.append({
-                            "pid": pid_match.group(1),
-                            "csrf": csrf_match.group(1),
-                            "ext_port": int(port_match.group(1)) if port_match else None,
-                        })
-
-        if not processes:
-            log("Antigravity: no language server process found")
+        if result.returncode != 0:
+            log(f"Antigravity: CLI error — {result.stderr.strip()}")
             return None
 
-        proc = processes[0]
-        log(f"Antigravity: found process PID={proc['pid']}, ext_port={proc['ext_port']}")
+        data = json.loads(result.stdout)
 
-        # Find connect port via lsof
-        lsof_result = subprocess.run(
-            ["lsof", "-nP", "-iTCP", "-sTCP:LISTEN", "-p", proc["pid"]],
-            capture_output=True, text=True, timeout=5
-        )
-        ports = set()
-        for line in lsof_result.stdout.splitlines():
-            m = re.search(r':(\d+)\s', line)
-            if m:
-                ports.add(int(m.group(1)))
-
-        ext_port = proc["ext_port"] or 0
-        sorted_ports = sorted(ports, key=lambda p: abs(p - ext_port))
-
-        ctx = ssl.create_default_context()
-        ctx.check_hostname = False
-        ctx.verify_mode = ssl.CERT_NONE
-
-        connect_port = None
-        for port in sorted_ports[:20]:
-            try:
-                req = urllib.request.Request(
-                    f"https://127.0.0.1:{port}/exa.language_server_pb.LanguageServerService/GetUnleashData",
-                    data=b'{}',
-                    headers={
-                        "X-Codeium-Csrf-Token": proc["csrf"],
-                        "Connect-Protocol-Version": "1",
-                        "Content-Type": "application/json",
-                    },
-                    method="POST"
-                )
-                with urllib.request.urlopen(req, timeout=2, context=ctx) as resp:
-                    if resp.status == 200:
-                        connect_port = port
-                        break
-            except:
-                continue
-
-        if not connect_port:
-            log("Antigravity: no connect port found")
-            return None
-
-        log(f"Antigravity: connect port = {connect_port}")
-
-        # Call GetUserStatus
-        body = json.dumps({
-            "metadata": {
-                "ideName": "antigravity",
-                "extensionName": "antigravity",
-                "locale": "en",
-                "ideVersion": "unknown"
-            }
-        }).encode()
-
-        req = urllib.request.Request(
-            f"https://127.0.0.1:{connect_port}/exa.language_server_pb.LanguageServerService/GetUserStatus",
-            data=body,
-            headers={
-                "X-Codeium-Csrf-Token": proc["csrf"],
-                "Connect-Protocol-Version": "1",
-                "Content-Type": "application/json",
-            },
-            method="POST"
-        )
-
-        with urllib.request.urlopen(req, timeout=10, context=ctx) as resp:
-            data = json.loads(resp.read())
-
-        us = data.get("userStatus", {})
-        plan_info = us.get("planStatus", {}).get("planInfo", {})
-        configs = us.get("cascadeModelConfigData", {}).get("clientModelConfigs", [])
-
+        # Transform models to widget format
         models = []
-        for c in configs:
-            qi = c.get("quotaInfo", {})
-            if qi:
-                remaining = qi.get("remainingFraction", 1.0)
-                models.append({
-                    "label": c.get("label", "Unknown"),
-                    "remaining_fraction": remaining,
-                    "pct_used": round((1 - remaining) * 100, 1),
-                    "reset_time": qi.get("resetTime"),
-                })
+        for m in data.get("models", []):
+            remaining = m.get("remainingPercentage", 1.0)
+            models.append({
+                "label": m.get("label", "Unknown"),
+                "remaining_fraction": remaining,
+                "pct_used": round((1 - remaining) * 100, 1),
+                "reset_time": m.get("resetTime"),
+            })
+
+        # Prompt credits
+        pc = data.get("promptCredits", {})
+        prompt_available = pc.get("available", 0)
+        prompt_monthly = pc.get("monthly", 0)
+        prompt_used_pct = round(pc.get("usedPercentage", 0) * 100, 1) if pc else 0
 
         out = {
-            "source": "local_language_server",
-            "plan": plan_info.get("planName", "Unknown"),
-            "email": us.get("email", ""),
-            "prompt_credits": us.get("planStatus", {}).get("availablePromptCredits", 0),
-            "flow_credits": us.get("planStatus", {}).get("availableFlowCredits", 0),
+            "source": "antigravity_cli",
+            "email": data.get("email", ""),
+            "prompt_credits": prompt_available,
+            "prompt_credits_monthly": prompt_monthly,
+            "prompt_credits_used_pct": prompt_used_pct,
             "models": models,
         }
 
-        log(f"Antigravity: {len(models)} models, plan={out['plan']}")
+        log(f"Antigravity: {len(models)} models, {prompt_available} credits left")
         return out
 
     except Exception as e:

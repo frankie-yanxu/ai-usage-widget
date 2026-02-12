@@ -170,18 +170,21 @@ export const render = ({ output, error }) => {
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
             <span style={{ fontSize: '13px', fontWeight: 600 }}>🔮 Antigravity</span>
-            <div>
-              <span style={{
-                fontSize: '10px', fontWeight: 500,
-                padding: '2px 8px', borderRadius: '10px',
-                background: 'rgba(100,210,255,0.2)', color: '#64d2ff',
-                marginRight: '6px',
-              }}>{a.plan}</span>
-              <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.45)' }}>
-                {a.prompt_credits}cr
-              </span>
-            </div>
+            <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.45)' }}>
+              {a.email || ''}
+            </span>
           </div>
+          {a.prompt_credits_monthly > 0 && (
+            <div style={{ marginBottom: '8px' }}>
+              <Row
+                left="Prompt Credits"
+                right={a.prompt_credits + ' / ' + a.prompt_credits_monthly}
+                rc={gc(a.prompt_credits_used_pct || 0)}
+              />
+              <Bar pct={a.prompt_credits_used_pct || 0} color="#64d2ff" />
+            </div>
+          )}
+          <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.45)', marginBottom: '4px' }}>Models</div>
           {a.models.map((m, i) => (
             <div key={i}>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', marginBottom: '2px' }}>
