@@ -12,9 +12,9 @@ export const command = `cat "$HOME/.ai-usage-widget/quota_data.json" 2>/dev/null
 export const className = `
   position: absolute;
   top: 555px;
-  left: 10px;
-  width: 570px;
-  max-width: 570px;
+  left: 20px;
+  width: 340px;
+  max-width: 340px;
   overflow: hidden;
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -34,7 +34,7 @@ const card = {
   fontSize: '12px',
   overflow: 'hidden',
   wordBreak: 'break-all',
-  maxWidth: '570px',
+  maxWidth: '340px',
 };
 
 const barBg = {
@@ -184,17 +184,15 @@ export const render = ({ output, error }) => {
               <Bar pct={a.prompt_credits_used_pct || 0} color="#64d2ff" />
             </div>
           )}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 16px' }}>
-            {a.models.map((m, i) => (
-              <div key={i}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', marginBottom: '2px' }}>
-                  <span style={{ color: mc(m.label) }}>{sl(m.label)}</span>
-                  <span style={{ color: gc(m.pct_used) }}>{m.pct_used}% · {fr(m.reset_time)}</span>
-                </div>
-                <Bar pct={m.pct_used} color={mc(m.label)} />
+          {a.models.map((m, i) => (
+            <div key={i}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', marginBottom: '2px' }}>
+                <span style={{ color: mc(m.label) }}>{sl(m.label)}</span>
+                <span style={{ color: gc(m.pct_used) }}>{m.pct_used}% · {fr(m.reset_time)}</span>
               </div>
-            ))}
-          </div>
+              <Bar pct={m.pct_used} color={mc(m.label)} />
+            </div>
+          ))}
         </div>
       )}
 
