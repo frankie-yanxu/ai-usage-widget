@@ -152,9 +152,11 @@ def get_antigravity_quota():
 
         data = json.loads(result.stdout)
 
-        # Transform models to widget format
+        # Transform models to widget format (skip autocomplete-only models like Gemini 2.5)
         models = []
         for m in data.get("models", []):
+            if m.get("isAutocompleteOnly", False):
+                continue
             remaining = m.get("remainingPercentage", 1.0)
             models.append({
                 "label": m.get("label", "Unknown"),
