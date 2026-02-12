@@ -46,11 +46,11 @@ else
     echo -e "  ${YELLOW}⚠${NC} Claude Code credentials not found (Claude section will be empty)"
 fi
 
-if pgrep -f "language_server_macos.*antigravity" &>/dev/null || pgrep -f "language_server.*windsurf" &>/dev/null; then
+if command -v antigravity-usage &>/dev/null; then
     HAS_ANTIGRAVITY=true
-    echo -e "  ${GREEN}✓${NC} Antigravity/Windsurf language server running"
+    echo -e "  ${GREEN}✓${NC} antigravity-usage CLI found: $(which antigravity-usage)"
 else
-    echo -e "  ${YELLOW}⚠${NC} Antigravity/Windsurf not running (Antigravity section will be empty)"
+    echo -e "  ${YELLOW}⚠${NC} antigravity-usage CLI not found (install: npm i -g antigravity-usage)"
 fi
 
 if [ "$HAS_CLAUDE" = false ] && [ "$HAS_ANTIGRAVITY" = false ]; then
@@ -111,6 +111,11 @@ cat > "$PLIST_PATH" << EOF
         <string>$PYTHON_PATH</string>
         <string>$DATA_DIR/collect_quota.py</string>
     </array>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin:$HOME/.npm-global/bin</string>
+    </dict>
     <key>StartInterval</key>
     <integer>120</integer>
     <key>RunAtLoad</key>

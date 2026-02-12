@@ -7,7 +7,7 @@ A beautiful macOS desktop widget that shows real-time usage quota for **Claude C
 ## ✨ Features
 
 - 💜 **Claude Code** — Session %, Weekly %, Extra usage ($), reset countdown
-- 🔮 **Antigravity/Windsurf** — Per-model quota bars, plan info, credits
+- 🔮 **Antigravity/Windsurf** — Per-model quota bars, prompt credits, auto-refresh
 - 🎨 **Native macOS look** — Frosted glass dark card, color-coded progress bars
 - 🔄 **Auto-refresh** — Updates every 2 minutes via LaunchAgent
 - 🟢🟠🔴 **Color alerts** — Green (<70%) → Orange (70-90%) → Red (>90%)
@@ -22,12 +22,16 @@ A beautiful macOS desktop widget that shows real-time usage quota for **Claude C
   ```
 - At least one of:
   - **Claude Code** — Must be logged in (credentials in Keychain or `~/.claude/`)
-  - **Antigravity / Windsurf** — Must be running with language server active
+  - **Antigravity / Windsurf** — Install the CLI and login:
+    ```bash
+    npm install -g antigravity-usage
+    antigravity-usage login   # Opens browser for Google auth
+    ```
 
 ## 🚀 Install
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/ai-usage-widget.git
+git clone https://github.com/frankie-yanxu/ai-usage-widget.git
 cd ai-usage-widget
 bash install.sh
 ```
