@@ -12,9 +12,9 @@ export const command = `cat "$HOME/.ai-usage-widget/quota_data.json" 2>/dev/null
 export const className = `
   position: absolute;
   top: 555px;
-  left: 20px;
-  width: 280px;
-  max-width: 280px;
+  left: 10px;
+  width: 570px;
+  max-width: 570px;
   overflow: hidden;
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -26,22 +26,22 @@ const card = {
   background: 'rgba(30,30,30,0.82)',
   backdropFilter: 'blur(30px) saturate(1.8)',
   WebkitBackdropFilter: 'blur(30px) saturate(1.8)',
-  borderRadius: '14px',
-  padding: '10px 12px',
+  borderRadius: '16px',
+  padding: '14px 16px',
   boxShadow: '0 2px 20px rgba(0,0,0,0.3), inset 0 0.5px 0 rgba(255,255,255,0.08)',
   border: '0.5px solid rgba(255,255,255,0.1)',
   color: 'rgba(255,255,255,0.92)',
-  fontSize: '11px',
+  fontSize: '12px',
   overflow: 'hidden',
   wordBreak: 'break-all',
-  maxWidth: '280px',
+  maxWidth: '570px',
 };
 
 const barBg = {
-  height: '3px',
+  height: '4px',
   background: 'rgba(255,255,255,0.08)',
-  borderRadius: '2px',
-  marginBottom: '4px',
+  borderRadius: '3px',
+  marginBottom: '6px',
   overflow: 'hidden',
 };
 
@@ -93,8 +93,8 @@ const Row = ({ left, right, rc }) => (
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '1px',
-    fontSize: '10px',
+    marginBottom: '2px',
+    fontSize: '12px',
   }}>
     <span>{left}</span>
     <span style={{ color: rc || 'inherit' }}>{right}</span>
@@ -138,15 +138,15 @@ export const render = ({ output, error }) => {
     <div style={card}>
       {/* ── Claude Code ── */}
       {c && (
-        <div style={{ marginBottom: '8px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
-            <span style={{ fontSize: '11px', fontWeight: 600 }}>💜 Claude Code</span>
+        <div style={{ marginBottom: '10px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+            <span style={{ fontSize: '14px', fontWeight: 600 }}>💜 Claude Code</span>
             <span style={{
-              fontSize: '9px', fontWeight: 500,
-              padding: '1px 6px', borderRadius: '8px',
+              fontSize: '10px', fontWeight: 500,
+              padding: '2px 8px', borderRadius: '10px',
               background: 'rgba(167,139,250,0.2)', color: '#a78bfa',
             }}>
-              W {Math.round(c.weekly?.pct_used || 0)}%
+              Weekly {Math.round(c.weekly?.pct_used || 0)}%
             </span>
           </div>
           <Row left="Session" right={Math.round(c.session?.pct_used || 0) + '%'} rc={gc(c.session?.pct_used || 0)} />
@@ -163,36 +163,38 @@ export const render = ({ output, error }) => {
       )}
 
       {/* ── Divider ── */}
-      {c && a && <div style={{ height: '1px', background: 'rgba(255,255,255,0.06)', marginBottom: '6px' }} />}
+      {c && a && <div style={{ height: '1px', background: 'rgba(255,255,255,0.06)', marginBottom: '10px' }} />}
 
       {/* ── Antigravity ── */}
       {a && a.models && (
         <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-            <span style={{ fontSize: '11px', fontWeight: 600 }}>🔮 Antigravity</span>
-            <span style={{ fontSize: '8px', color: 'rgba(255,255,255,0.35)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+            <span style={{ fontSize: '14px', fontWeight: 600 }}>🔮 Antigravity</span>
+            <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.45)' }}>
               {a.email || ''}
             </span>
           </div>
           {a.prompt_credits_monthly > 0 && (
-            <div style={{ marginBottom: '4px' }}>
+            <div style={{ marginBottom: '6px' }}>
               <Row
-                left="Credits"
-                right={a.prompt_credits + '/' + a.prompt_credits_monthly}
+                left="Prompt Credits"
+                right={a.prompt_credits + ' / ' + a.prompt_credits_monthly}
                 rc={gc(a.prompt_credits_used_pct || 0)}
               />
               <Bar pct={a.prompt_credits_used_pct || 0} color="#64d2ff" />
             </div>
           )}
-          {a.models.map((m, i) => (
-            <div key={i}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '9px', marginBottom: '1px' }}>
-                <span style={{ color: mc(m.label) }}>{sl(m.label)}</span>
-                <span style={{ color: gc(m.pct_used) }}>{m.pct_used}% · {fr(m.reset_time)}</span>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 16px' }}>
+            {a.models.map((m, i) => (
+              <div key={i}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', marginBottom: '2px' }}>
+                  <span style={{ color: mc(m.label) }}>{sl(m.label)}</span>
+                  <span style={{ color: gc(m.pct_used) }}>{m.pct_used}% · {fr(m.reset_time)}</span>
+                </div>
+                <Bar pct={m.pct_used} color={mc(m.label)} />
               </div>
-              <Bar pct={m.pct_used} color={mc(m.label)} />
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
 
