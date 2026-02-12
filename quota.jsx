@@ -13,8 +13,8 @@ export const className = `
   position: absolute;
   top: 555px;
   left: 20px;
-  width: 300px;
-  max-width: 300px;
+  width: 280px;
+  max-width: 280px;
   overflow: hidden;
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -26,22 +26,22 @@ const card = {
   background: 'rgba(30,30,30,0.82)',
   backdropFilter: 'blur(30px) saturate(1.8)',
   WebkitBackdropFilter: 'blur(30px) saturate(1.8)',
-  borderRadius: '16px',
-  padding: '14px 16px',
+  borderRadius: '14px',
+  padding: '10px 12px',
   boxShadow: '0 2px 20px rgba(0,0,0,0.3), inset 0 0.5px 0 rgba(255,255,255,0.08)',
   border: '0.5px solid rgba(255,255,255,0.1)',
   color: 'rgba(255,255,255,0.92)',
-  fontSize: '12px',
+  fontSize: '11px',
   overflow: 'hidden',
   wordBreak: 'break-all',
-  maxWidth: '300px',
+  maxWidth: '280px',
 };
 
 const barBg = {
-  height: '4px',
+  height: '3px',
   background: 'rgba(255,255,255,0.08)',
-  borderRadius: '3px',
-  marginBottom: '8px',
+  borderRadius: '2px',
+  marginBottom: '4px',
   overflow: 'hidden',
 };
 
@@ -64,7 +64,7 @@ function fr(iso) {
   if (d <= 0) return 'resetting';
   var h = Math.floor(d / 3600000);
   var m = Math.floor((d % 3600000) / 60000);
-  return h > 0 ? h + 'h ' + m + 'm' : m + 'm';
+  return h > 0 ? h + 'h' + m + 'm' : m + 'm';
 }
 
 // Shorten model labels
@@ -83,7 +83,7 @@ const Bar = ({ pct, color }) => (
       width: Math.min(pct, 100) + '%',
       height: '100%',
       background: color,
-      borderRadius: '3px',
+      borderRadius: '2px',
     }} />
   </div>
 );
@@ -93,8 +93,8 @@ const Row = ({ left, right, rc }) => (
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '2px',
-    fontSize: '11px',
+    marginBottom: '1px',
+    fontSize: '10px',
   }}>
     <span>{left}</span>
     <span style={{ color: rc || 'inherit' }}>{right}</span>
@@ -109,11 +109,11 @@ export const render = ({ output, error }) => {
   } catch (e) {
     return (
       <div style={card}>
-        <div style={{ fontWeight: 600 }}>⏳ Loading quota...</div>
+        <div style={{ fontWeight: 600, fontSize: '10px' }}>⏳ Loading quota...</div>
         <div style={{
-          fontSize: '10px',
+          fontSize: '9px',
           color: 'rgba(255,255,255,0.45)',
-          marginTop: '4px',
+          marginTop: '2px',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',
@@ -131,22 +131,22 @@ export const render = ({ output, error }) => {
   if (c && c.extra_usage) {
     var used = (c.extra_usage.used_cents / 100).toFixed(2);
     var limit = Math.round(c.extra_usage.limit_cents / 100);
-    extraText = '$' + used + ' / $' + limit;
+    extraText = '$' + used + '/$' + limit;
   }
 
   return (
     <div style={card}>
       {/* ── Claude Code ── */}
       {c && (
-        <div style={{ marginBottom: '12px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <span style={{ fontSize: '13px', fontWeight: 600 }}>💜 Claude Code</span>
+        <div style={{ marginBottom: '8px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
+            <span style={{ fontSize: '11px', fontWeight: 600 }}>💜 Claude Code</span>
             <span style={{
-              fontSize: '10px', fontWeight: 500,
-              padding: '2px 8px', borderRadius: '10px',
+              fontSize: '9px', fontWeight: 500,
+              padding: '1px 6px', borderRadius: '8px',
               background: 'rgba(167,139,250,0.2)', color: '#a78bfa',
             }}>
-              Weekly {Math.round(c.weekly?.pct_used || 0)}%
+              W {Math.round(c.weekly?.pct_used || 0)}%
             </span>
           </div>
           <Row left="Session" right={Math.round(c.session?.pct_used || 0) + '%'} rc={gc(c.session?.pct_used || 0)} />
@@ -163,31 +163,30 @@ export const render = ({ output, error }) => {
       )}
 
       {/* ── Divider ── */}
-      {c && a && <div style={{ height: '1px', background: 'rgba(255,255,255,0.06)', marginBottom: '10px' }} />}
+      {c && a && <div style={{ height: '1px', background: 'rgba(255,255,255,0.06)', marginBottom: '6px' }} />}
 
       {/* ── Antigravity ── */}
       {a && a.models && (
         <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <span style={{ fontSize: '13px', fontWeight: 600 }}>🔮 Antigravity</span>
-            <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.45)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+            <span style={{ fontSize: '11px', fontWeight: 600 }}>🔮 Antigravity</span>
+            <span style={{ fontSize: '8px', color: 'rgba(255,255,255,0.35)' }}>
               {a.email || ''}
             </span>
           </div>
           {a.prompt_credits_monthly > 0 && (
-            <div style={{ marginBottom: '8px' }}>
+            <div style={{ marginBottom: '4px' }}>
               <Row
-                left="Prompt Credits"
-                right={a.prompt_credits + ' / ' + a.prompt_credits_monthly}
+                left="Credits"
+                right={a.prompt_credits + '/' + a.prompt_credits_monthly}
                 rc={gc(a.prompt_credits_used_pct || 0)}
               />
               <Bar pct={a.prompt_credits_used_pct || 0} color="#64d2ff" />
             </div>
           )}
-          <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.45)', marginBottom: '4px' }}>Models</div>
           {a.models.map((m, i) => (
             <div key={i}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', marginBottom: '2px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '9px', marginBottom: '1px' }}>
                 <span style={{ color: mc(m.label) }}>{sl(m.label)}</span>
                 <span style={{ color: gc(m.pct_used) }}>{m.pct_used}% · {fr(m.reset_time)}</span>
               </div>
