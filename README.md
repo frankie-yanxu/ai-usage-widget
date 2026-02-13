@@ -2,7 +2,7 @@
 
 A beautiful macOS desktop widget that shows real-time usage quota for **Claude Code** and **Antigravity (Windsurf)** — right on your desktop.
 
-![Widget Screenshot](screenshot.png)
+![Widget Screenshot](widget-preview.png)
 
 ## ✨ Features
 
