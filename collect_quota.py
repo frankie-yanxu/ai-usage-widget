@@ -127,6 +127,7 @@ def get_antigravity_quota():
     try:
         # Find the CLI binary (may be in npm global bin)
         cli_paths = [
+            os.path.join(DATA_DIR, "antigravity-usage-cli"),  # 1. Symlink created by install.sh (most reliable)
             os.path.expanduser("~/.npm-global/bin/antigravity-usage"),
             "/usr/local/bin/antigravity-usage",
             "/opt/homebrew/bin/antigravity-usage",

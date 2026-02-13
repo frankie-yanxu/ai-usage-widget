@@ -79,6 +79,13 @@ DATA_DIR="$HOME/.ai-usage-widget"
 mkdir -p "$DATA_DIR"
 echo -e "  ${GREEN}✓${NC} Created $DATA_DIR"
 
+# Create symlink to Antigravity CLI (to handle NVM/PATH issues in LaunchAgent)
+CLI_PATH=$(which antigravity-usage 2>/dev/null)
+if [ -n "$CLI_PATH" ]; then
+    ln -sf "$CLI_PATH" "$DATA_DIR/antigravity-usage-cli"
+    echo -e "  ${GREEN}✓${NC} Linked CLI to $DATA_DIR/antigravity-usage-cli"
+fi
+
 # Copy collector script
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 cp "$SCRIPT_DIR/collect_quota.py" "$DATA_DIR/collect_quota.py"
