@@ -37,7 +37,7 @@ npm install -g antigravity-usage
 # 2. Clone & Install Widget
 git clone https://github.com/frankie-yanxu/ai-usage-widget.git
 cd ai-usage-widget
-bash install.sh
+bash install.sh  # No chmod needed!
 ```
 
 The installer will:
