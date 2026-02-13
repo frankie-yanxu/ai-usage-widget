@@ -40,14 +40,14 @@ def get_claude_quota():
                     creds = json.load(f)
             else:
                 log("Claude: no credentials found")
-                return None
+                return {"error": "No Credentials", "detail": "Run: claude login"}
         else:
             creds = json.loads(result.stdout.strip())
 
         token = creds.get("claudeAiOauth", {}).get("accessToken")
         if not token:
             log("Claude: no OAuth access token")
-            return None
+            return {"error": "No Token", "detail": "Run: claude login"}
 
         # SSL context with fallback
         ssl_ctx = ssl.create_default_context()
@@ -145,7 +145,7 @@ def get_antigravity_quota():
 
         if not cli:
             log("Antigravity: antigravity-usage CLI not found (npm i -g antigravity-usage)")
-            return None
+            return {"error": "CLI Not Found", "detail": "Run: npm i -g antigravity-usage"}
 
         result = subprocess.run(
             [cli, "quota", "--json"],
@@ -154,7 +154,7 @@ def get_antigravity_quota():
 
         if result.returncode != 0:
             log(f"Antigravity: CLI error — {result.stderr.strip()}")
-            return None
+            return {"error": "CLI Error", "detail": result.stderr.strip()}
 
         data = json.loads(result.stdout)
 
@@ -191,7 +191,7 @@ def get_antigravity_quota():
 
     except Exception as e:
         log(f"Antigravity: error — {e}")
-        return None
+        return {"error": "Error", "detail": str(e)}
 
 
 # ─── 3. Gemini Quota (placeholder) ───────────────────────────────────

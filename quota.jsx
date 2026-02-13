@@ -194,33 +194,61 @@ export const render = ({ output, error }) => {
       {c && a && <div style={{ height: '1px', background: 'rgba(255,255,255,0.06)', marginBottom: '10px' }} />}
 
       {/* ── Antigravity ── */}
-      {a && a.models && (
+      {/* ── Antigravity ── */}
+      {a && (
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
             <span style={{ fontSize: '14px', fontWeight: 600 }}>🔮 Antigravity</span>
-            <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.45)' }}>
-              {a.email || ''}
-            </span>
+            
+             {!a.error && (
+              <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.45)' }}>
+                {a.email || ''}
+              </span>
+            )}
+             {a.error && (
+               <span style={{
+                fontSize: '10px', fontWeight: 600,
+                color: '#ff453a',
+              }}>
+                ⚠️ {a.error}
+              </span>
+            )}
           </div>
-          {a.prompt_credits_monthly > 0 && (
-            <div style={{ marginBottom: '6px' }}>
-              <Row
-                left="Prompt Credits"
-                right={a.prompt_credits + ' / ' + a.prompt_credits_monthly}
-                rc={gc(a.prompt_credits_used_pct || 0)}
-              />
-              <Bar pct={a.prompt_credits_used_pct || 0} color="#64d2ff" />
-            </div>
+
+          {a.error ? (
+              <div style={{
+                fontSize: '11px',
+                color: 'rgba(255,255,255,0.6)',
+                padding: '8px',
+                background: 'rgba(255,69,58,0.1)',
+                borderRadius: '6px',
+                border: '1px solid rgba(255,69,58,0.2)'
+             }}>
+               {a.detail || "Client error"}
+             </div>
+          ) : (
+            <>
+              {a.prompt_credits_monthly > 0 && (
+                <div style={{ marginBottom: '6px' }}>
+                  <Row
+                    left="Prompt Credits"
+                    right={a.prompt_credits + ' / ' + a.prompt_credits_monthly}
+                    rc={gc(a.prompt_credits_used_pct || 0)}
+                  />
+                  <Bar pct={a.prompt_credits_used_pct || 0} color="#64d2ff" />
+                </div>
+              )}
+              {a.models && a.models.map((m, i) => (
+                <div key={i}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', marginBottom: '2px' }}>
+                    <span style={{ color: mc(m.label) }}>{sl(m.label)}</span>
+                    <span style={{ color: gc(m.pct_used) }}>{m.pct_used}% · {fr(m.reset_time)}</span>
+                  </div>
+                  <Bar pct={m.pct_used} color={mc(m.label)} />
+                </div>
+              ))}
+            </>
           )}
-          {a.models.map((m, i) => (
-            <div key={i}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', marginBottom: '2px' }}>
-                <span style={{ color: mc(m.label) }}>{sl(m.label)}</span>
-                <span style={{ color: gc(m.pct_used) }}>{m.pct_used}% · {fr(m.reset_time)}</span>
-              </div>
-              <Bar pct={m.pct_used} color={mc(m.label)} />
-            </div>
-          ))}
         </div>
       )}
 
