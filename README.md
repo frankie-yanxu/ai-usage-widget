@@ -31,6 +31,10 @@ A beautiful macOS desktop widget that shows real-time usage quota for **Claude C
 ## 🚀 Install
 
 ```bash
+# 1. Install Antigravity data tool (Required)
+npm install -g antigravity-usage
+
+# 2. Clone & Install Widget
 git clone https://github.com/frankie-yanxu/ai-usage-widget.git
 cd ai-usage-widget
 bash install.sh
