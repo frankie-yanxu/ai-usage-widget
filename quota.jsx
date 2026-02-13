@@ -137,27 +137,55 @@ export const render = ({ output, error }) => {
   return (
     <div style={card}>
       {/* ── Claude Code ── */}
+      {/* ── Claude Code ── */}
       {c && (
         <div style={{ marginBottom: '10px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
             <span style={{ fontSize: '14px', fontWeight: 600 }}>💜 Claude Code</span>
-            <span style={{
-              fontSize: '10px', fontWeight: 500,
-              padding: '2px 8px', borderRadius: '10px',
-              background: 'rgba(167,139,250,0.2)', color: '#a78bfa',
-            }}>
-              Weekly {Math.round(c.weekly?.pct_used || 0)}%
-            </span>
+            
+            {!c.error && (
+              <span style={{
+                fontSize: '10px', fontWeight: 500,
+                padding: '2px 8px', borderRadius: '10px',
+                background: 'rgba(167,139,250,0.2)', color: '#a78bfa',
+              }}>
+                Weekly {Math.round(c.weekly?.pct_used || 0)}%
+              </span>
+            )}
+            {c.error && (
+               <span style={{
+                fontSize: '10px', fontWeight: 600,
+                color: '#ff453a',
+              }}>
+                ⚠️ {c.error}
+              </span>
+            )}
           </div>
-          <Row left="Session" right={Math.round(c.session?.pct_used || 0) + '%'} rc={gc(c.session?.pct_used || 0)} />
-          <Bar pct={c.session?.pct_used || 0} color={gc(c.session?.pct_used || 0)} />
-          <Row left="Weekly" right={Math.round(c.weekly?.pct_used || 0) + '% · ' + fr(c.weekly?.resets_at)} rc={gc(c.weekly?.pct_used || 0)} />
-          <Bar pct={c.weekly?.pct_used || 0} color={gc(c.weekly?.pct_used || 0)} />
-          {c.extra_usage && (
-            <div>
-              <Row left="Extra" right={extraText} rc="#64d2ff" />
-              <Bar pct={c.extra_usage.pct_used} color="#64d2ff" />
-            </div>
+
+          {c.error ? (
+             <div style={{
+                fontSize: '11px',
+                color: 'rgba(255,255,255,0.6)',
+                padding: '8px',
+                background: 'rgba(255,69,58,0.1)',
+                borderRadius: '6px',
+                border: '1px solid rgba(255,69,58,0.2)'
+             }}>
+               {c.detail || "Authentication failed"}
+             </div>
+          ) : (
+            <>
+              <Row left="Session" right={Math.round(c.session?.pct_used || 0) + '%'} rc={gc(c.session?.pct_used || 0)} />
+              <Bar pct={c.session?.pct_used || 0} color={gc(c.session?.pct_used || 0)} />
+              <Row left="Weekly" right={Math.round(c.weekly?.pct_used || 0) + '% · ' + fr(c.weekly?.resets_at)} rc={gc(c.weekly?.pct_used || 0)} />
+              <Bar pct={c.weekly?.pct_used || 0} color={gc(c.weekly?.pct_used || 0)} />
+              {c.extra_usage && (
+                <div>
+                  <Row left="Extra" right={extraText} rc="#64d2ff" />
+                  <Bar pct={c.extra_usage.pct_used} color="#64d2ff" />
+                </div>
+              )}
+            </>
           )}
         </div>
       )}

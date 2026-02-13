@@ -105,9 +105,15 @@ def get_claude_quota():
         log(f"Claude: session {result['session']['pct_used']}%, weekly {result['weekly']['pct_used']}%")
         return result
 
+    except urllib.error.HTTPError as e:
+        if e.code == 401:
+            log("Claude: 401 Unauthorized (Login Required)")
+            return {"error": "Login Required", "detail": "Run: claude login"}
+        log(f"Claude: HTTP error {e.code} — {e}")
+        return {"error": f"HTTP {e.code}", "detail": str(e)}
     except Exception as e:
         log(f"Claude: error — {e}")
-        return None
+        return {"error": "Error", "detail": str(e)}
 
 
 # ─── 2. Antigravity / Windsurf — via antigravity-usage CLI ───────────
