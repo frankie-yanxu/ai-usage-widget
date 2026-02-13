@@ -26,8 +26,22 @@ fi
 echo -e "  ${GREEN}✓${NC} python3 found: $(which python3)"
 
 # Check Übersicht
-# Check Übersicht
+# Try standard path first
 WIDGET_DIR="$HOME/Library/Application Support/Übersicht/widgets"
+
+# If not found, try finding it robustly (handling encoding issues)
+if [ ! -d "$WIDGET_DIR" ]; then
+    echo -e "${YELLOW}▸ Searching for Übersicht widget folder...${NC}"
+    # Look for "bersicht/widgets" pattern to ignore the first char encoding
+    FOUND_DIR=$(find "$HOME/Library/Application Support" -maxdepth 3 -type d -path "*/widgets" 2>/dev/null | grep -i "bersicht" | head -n 1)
+    if [ -n "$FOUND_DIR" ]; then
+        WIDGET_DIR="$FOUND_DIR"
+    else
+        # Fallback to creating the standard one if absolutely nothing found
+        mkdir -p "$WIDGET_DIR"
+    fi
+fi
+
 mkdir -p "$WIDGET_DIR"
 echo -e "  ${GREEN}✓${NC} Using widget directory: $WIDGET_DIR"
 
