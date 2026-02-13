@@ -107,6 +107,18 @@ PRs welcome! Ideas:
 - Multiple widget sizes
 - Notification alerts when quota is low
 
+## ❓ Troubleshooting
+
+If the widget shows "No data available":
+
+```bash
+cd ai-usage-widget
+chmod +x debug.sh
+./debug.sh
+```
+
+Send the output of this command to get help!
+
 ## 📄 License
 
 MIT
