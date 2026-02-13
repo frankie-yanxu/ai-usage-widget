@@ -253,7 +253,18 @@ export const render = ({ output, error }) => {
       )}
 
       {/* ── No data ── */}
-      {!c && !a && <div style={{ fontWeight: 600 }}>No data available</div>}
+      {/* ── No data ── */}
+      {!c && !a && (
+        <div style={{ fontWeight: 600 }}>
+          No data available
+          <div style={{ fontSize: '9px', fontWeight: 400, marginTop: '6px', opacity: 0.7 }}>
+            Check: ~/.ai-usage-widget/quota_data.json
+          </div>
+          <pre style={{ fontSize: '8px', marginTop: '4px', overflow: 'hidden' }}>
+            Debug: {output ? output.slice(0, 50) + '...' : 'Empty output'}
+          </pre>
+        </div>
+      )}
     </div>
   );
 };
