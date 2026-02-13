@@ -26,14 +26,11 @@ fi
 echo -e "  ${GREEN}✓${NC} python3 found: $(which python3)"
 
 # Check Übersicht
+# Check Übersicht
 WIDGET_DIR="$HOME/Library/Application Support/Übersicht/widgets"
-if [ ! -d "$WIDGET_DIR" ]; then
-    echo -e "${RED}✗ Übersicht not found.${NC}"
-    echo -e "  Install it from: ${BLUE}https://tracesof.net/uebersicht/${NC}"
-    echo -e "  Or: ${BLUE}brew install --cask ubersicht${NC}"
-    exit 1
-fi
-echo -e "  ${GREEN}✓${NC} Übersicht found"
+mkdir -p "$WIDGET_DIR"
+echo -e "  ${GREEN}✓${NC} Using widget directory: $WIDGET_DIR"
+
 
 # Check at least one AI tool is available
 HAS_CLAUDE=false
@@ -130,6 +127,12 @@ launchctl unload "$PLIST_PATH" 2>/dev/null || true
 launchctl load "$PLIST_PATH"
 echo -e "  ${GREEN}✓${NC} LaunchAgent installed (runs every 2 minutes)"
 
+echo ""
+
+# ─── Refresh Übersicht ──────────────────────────────────────────────
+echo -e "${YELLOW}▸ Refreshing Übersicht...${NC}"
+osascript -e 'tell application "Übersicht" to refresh' 2>/dev/null || true
+echo -e "  ${GREEN}✓${NC} Refreshed"
 echo ""
 
 # ─── Done ─────────────────────────────────────────────────────────────
