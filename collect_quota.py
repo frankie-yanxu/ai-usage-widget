@@ -49,13 +49,14 @@ def get_claude_quota():
             log("Claude: no OAuth access token")
             return {"error": "No Token", "detail": "Run: claude login"}
 
-        # SSL context with fallback
+        # SSL context (strict verification)
         ssl_ctx = ssl.create_default_context()
         try:
             import certifi
             ssl_ctx.load_verify_locations(certifi.where())
         except ImportError:
-            ssl_ctx = ssl._create_unverified_context()
+            # Fallback to system certificates (secure), do NOT disable verification
+            pass
 
         req = urllib.request.Request(
             "https://api.anthropic.com/api/oauth/usage",
