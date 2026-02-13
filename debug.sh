@@ -13,6 +13,8 @@ echo "2. Checking Directory..."
 DATA_DIR="$HOME/.ai-usage-widget"
 if [ -d "$DATA_DIR" ]; then
     echo "✅ Data directory exists: $DATA_DIR"
+    echo "   Checking CLI symlink:"
+    ls -l "$DATA_DIR/antigravity-usage-cli"
 else
     echo "❌ Data directory MISSING: $DATA_DIR"
 fi
