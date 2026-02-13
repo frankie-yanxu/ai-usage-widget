@@ -174,7 +174,7 @@ export const render = ({ output, error }) => {
                {c.detail || "Authentication failed"}
              </div>
           ) : (
-            <>
+            <div>
               <Row left="Session" right={Math.round(c.session?.pct_used || 0) + '%'} rc={gc(c.session?.pct_used || 0)} />
               <Bar pct={c.session?.pct_used || 0} color={gc(c.session?.pct_used || 0)} />
               <Row left="Weekly" right={Math.round(c.weekly?.pct_used || 0) + '% · ' + fr(c.weekly?.resets_at)} rc={gc(c.weekly?.pct_used || 0)} />
@@ -185,7 +185,7 @@ export const render = ({ output, error }) => {
                   <Bar pct={c.extra_usage.pct_used} color="#64d2ff" />
                 </div>
               )}
-            </>
+            </div>
           )}
         </div>
       )}
@@ -227,7 +227,7 @@ export const render = ({ output, error }) => {
                {a.detail || "Client error"}
              </div>
           ) : (
-            <>
+            <div>
               {a.prompt_credits_monthly > 0 && (
                 <div style={{ marginBottom: '6px' }}>
                   <Row
@@ -247,7 +247,7 @@ export const render = ({ output, error }) => {
                   <Bar pct={m.pct_used} color={mc(m.label)} />
                 </div>
               ))}
-            </>
+            </div>
           )}
         </div>
       )}
