@@ -117,6 +117,13 @@ PLIST_NAME="com.ai-usage-widget.collect"
 PLIST_PATH="$HOME/Library/LaunchAgents/$PLIST_NAME.plist"
 PYTHON_PATH="$(which python3)"
 
+# Get CLI directory to add to PATH (for NVM support)
+if [ -n "$CLI_PATH" ]; then
+    CLI_DIR="$(dirname "$CLI_PATH")"
+else
+    CLI_DIR=""
+fi
+
 cat > "$PLIST_PATH" << EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -132,7 +139,7 @@ cat > "$PLIST_PATH" << EOF
     <key>EnvironmentVariables</key>
     <dict>
         <key>PATH</key>
-        <string>/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin:$HOME/.npm-global/bin</string>
+        <string>/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin:$HOME/.npm-global/bin:$CLI_DIR</string>
     </dict>
     <key>StartInterval</key>
     <integer>120</integer>
